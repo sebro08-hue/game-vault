@@ -25,4 +25,4 @@ java -cp out gestor.Main
 4. Registrar el juego en `gestor/CargadorJuegos.java` (`new JuegoInfo("Nombre", MiJuego::getInstance)`).
 5. Al cerrar la ventana del juego, la plataforma consulta `getStats()` y lo guarda si entra al top 3 (`data/records.txt`).
 
-Juego externo (de otro grupo): copiar su código a su propio paquete y adaptarlo a estas reglas.
+Juego externo: copiar su código a su propio paquete y adaptarlo a estas reglas.
