@@ -22,3 +22,6 @@ Thumbs.db
 
 # Enunciado del curso (no publicar)
 *.pdf
+
+# Records locales (contienen nombres de jugadores)
+data/records.txt

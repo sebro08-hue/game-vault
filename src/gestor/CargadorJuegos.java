@@ -2,6 +2,7 @@ package gestor;
 
 import gestor.api.GameFunction;
 import juegos.demo.DemoGame;
+import juegos.memoria.MemoriaGame;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -21,7 +22,8 @@ public final class CargadorJuegos {
     }
 
     private static final List<JuegoInfo> JUEGOS = List.of(
-            new JuegoInfo("Click Rapido", DemoGame::getInstance)
+            new JuegoInfo("Click Rapido", DemoGame::getInstance),
+            new JuegoInfo("Memoria", MemoriaGame::getInstance)
     );
 
     private CargadorJuegos() {
