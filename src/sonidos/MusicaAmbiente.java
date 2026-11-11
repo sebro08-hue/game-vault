@@ -38,18 +38,19 @@ public final class MusicaAmbiente {
             {19,-1,21,-1, 24,-1,21,-1, 19,-1,16,-1, 14,-1,12,-1}
     };
     private static volatile Clip reproductor;
+    private static byte[] pista; // se compone una sola vez (unos 2 s) y se reutiliza
 
     private MusicaAmbiente() { }
 
     /** Inicia una sola pista y la repite hasta cerrar la plataforma. */
     public static void iniciar() {
-        if (!ACTIVA.compareAndSet(false, true)) {
+        if (ControlAudio.isSilenciado() || !ACTIVA.compareAndSet(false, true)) {
             return;
         }
         Thread hilo = new Thread(() -> {
             Clip nuevo = null;
             try {
-                byte[] audio = componer();
+                byte[] audio = obtenerPista();
                 nuevo = AudioSystem.getClip();
                 nuevo.open(FORMATO, audio, 0, audio.length);
                 synchronized (MusicaAmbiente.class) {
@@ -81,6 +82,13 @@ public final class MusicaAmbiente {
             actual.stop();
             actual.close();
         }
+    }
+
+    private static synchronized byte[] obtenerPista() {
+        if (pista == null) {
+            pista = componer();
+        }
+        return pista;
     }
 
     /** Composicion sintetizada, PCM 16 bits mono. Exactamente 90 segundos a 128 BPM. */

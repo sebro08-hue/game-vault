@@ -3,9 +3,11 @@ package gestor;
 import gestor.CargadorJuegos.JuegoInfo;
 import gestor.api.GameFunction;
 import gestor.api.Stat;
+import sonidos.ControlAudio;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -23,6 +25,7 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 import java.util.HashSet;
 import java.util.Set;
@@ -67,8 +70,14 @@ public class VentanaPrincipal extends JFrame {
         verRecords.addActionListener(e -> mostrarRecords());
         menuRecords.add(verRecords);
         JMenu menuArchivo = new JMenu("Archivo");
+        JCheckBoxMenuItem silenciar = new JCheckBoxMenuItem("Silenciar sonido", ControlAudio.isSilenciado());
+        silenciar.addActionListener(e -> ControlAudio.setSilenciado(silenciar.isSelected()));
+        menuArchivo.add(silenciar);
+        menuArchivo.addSeparator();
         JMenuItem salir = new JMenuItem("Salir");
-        salir.addActionListener(e -> dispose());
+        // igual que la X de la ventana: con EXIT_ON_CLOSE la aplicacion termina aunque
+        // haya juegos con relojes activos (dispose() dejaba el proceso vivo)
+        salir.addActionListener(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
         menuArchivo.add(salir);
         barra.add(menuArchivo);
         barra.add(menuJuegos);

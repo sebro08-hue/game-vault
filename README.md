@@ -9,8 +9,19 @@ Proyecto del curso Programación Orientada a Objetos – TEC, Sede San Carlos.
 - `src/gestor/` – ventana principal, records y carga de juegos
 - `src/gestor/api/` – `GameFunction` y `Stat`
 - `src/juegos/<juego>/` – un paquete por juego
+- `src/sonidos/` – música de fondo y efectos sintetizados (sin archivos de audio)
 - `data/` – archivo de records
-- `docs/` – enunciado y documentación externa
+- `docs/` – documentación externa
+
+## Juegos
+| Juego | Estadística (más alto es mejor) | Controles |
+|---|---|---|
+| Click Rápido | Clics en 10 s | Clic en el botón |
+| Memoria | Puntaje: `1000 − 25·intentos − 5·segundos` | Clic en las cartas |
+| Snake | Manzanas comidas | Flechas o WASD · P/Espacio: pausa |
+| Tetris | Puntos (líneas + caída rápida) | ←/→ o A/D · ↑/W: girar · ↓/S: bajar · Espacio: caída · P: pausa |
+
+El sonido se apaga o enciende desde **Archivo → Silenciar sonido**.
 
 ## Compilar y ejecutar
 ```bash
