@@ -2,6 +2,9 @@ package juegos.snake;
 
 import gestor.api.GameFunction;
 import gestor.api.Stat;
+import sonidos.Efectos;
+import sonidos.Efectos.Sonido;
+
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -16,6 +19,7 @@ import javax.swing.event.InternalFrameEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -37,7 +41,8 @@ public class SnakeGame extends JInternalFrame implements GameFunction {
 
     private static final int ANCHO = 20;
     private static final int ALTO = 20;
-    private static final int CELDA = 20;
+    private static final int CELDA = 22;
+    private static final int MARGEN_TABLERO = 16;
     private static final int DELAY_INICIAL = 140;
     private static final int DELAY_MINIMO = 60;
     private static final int ACELERACION = 4;   // ms menos por manzana
@@ -46,6 +51,8 @@ public class SnakeGame extends JInternalFrame implements GameFunction {
     private static final Color CUERPO = new Color(80, 190, 90);
     private static final Color CABEZA = new Color(40, 140, 60);
     private static final Color COMIDA = new Color(220, 60, 60);
+    private static final Color BORDE = new Color(125, 165, 190);
+    private static final Color CUADRICULA = new Color(39, 47, 53);
 
     private static SnakeGame instancia;
 
@@ -86,7 +93,30 @@ public class SnakeGame extends JInternalFrame implements GameFunction {
             }
         });
         pack();
-        setLocation(100, 30);
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        if (visible) {
+            ajustarAlEscritorio();
+        }
+        super.setVisible(visible);
+    }
+
+    /** Mantiene la ventana dentro del escritorio y la centra al abrirse. */
+    private void ajustarAlEscritorio() {
+        Container escritorio = getParent();
+        if (escritorio == null) {
+            return;
+        }
+        int margen = 12;
+        int ancho = Math.min(520, Math.max(1, escritorio.getWidth() - margen * 2));
+        int alto = Math.min(555, Math.max(1, escritorio.getHeight() - margen * 2));
+        setSize(ancho, alto);
+        setLocation(Math.max(0, (escritorio.getWidth() - ancho) / 2),
+                    Math.max(0, (escritorio.getHeight() - alto) / 2));
+        revalidate();
+        repaint();
     }
 
     /** @return la unica instancia del juego (se crea la primera vez que se pide). */
@@ -192,6 +222,7 @@ public class SnakeGame extends JInternalFrame implements GameFunction {
     }
 
     private void paso() {
+        int manzanasPrevias = logica.getManzanas();
         LogicaSnake.Estado estado;
         try {
             estado = logica.avanzar();
@@ -199,6 +230,9 @@ public class SnakeGame extends JInternalFrame implements GameFunction {
             // el reloj disparo despues de terminar la partida: solo se detiene
             reloj.stop();
             return;
+        }
+        if (logica.getManzanas() > manzanasPrevias) {
+            Efectos.reproducir(Sonido.MANZANA);
         }
         reloj.setDelay(Math.max(DELAY_MINIMO, DELAY_INICIAL - ACELERACION * logica.getManzanas()));
         if (estado != LogicaSnake.Estado.EN_CURSO) {
@@ -210,6 +244,8 @@ public class SnakeGame extends JInternalFrame implements GameFunction {
 
     private void terminar(LogicaSnake.Estado estado) {
         reloj.stop();
+        Efectos.reproducir(estado == LogicaSnake.Estado.GANO
+                ? Sonido.SNAKE_GANAR : Sonido.SNAKE_PERDER);
         int manzanas = logica.getManzanas();
         // el nombre queda null: la plataforma pone el del jugador de la sesion
         ultimoResultado = new Stat("Manzanas", null, manzanas);
@@ -226,7 +262,8 @@ public class SnakeGame extends JInternalFrame implements GameFunction {
     private class PanelJuego extends JPanel {
 
         PanelJuego() {
-            setPreferredSize(new Dimension(ANCHO * CELDA, ALTO * CELDA));
+            int lado = ANCHO * CELDA + MARGEN_TABLERO * 2;
+            setPreferredSize(new Dimension(lado, lado));
             setBackground(FONDO);
             setFocusable(true);
         }
@@ -234,22 +271,59 @@ public class SnakeGame extends JInternalFrame implements GameFunction {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            if (logica != null) {
-                Punto comida = logica.getComida();
-                if (comida != null) {
-                    g2.setColor(COMIDA);
-                    g2.fillOval(comida.x() * CELDA + 2, comida.y() * CELDA + 2, CELDA - 4, CELDA - 4);
+            Graphics2D g2 = (Graphics2D) g.create();
+            try {
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Cada celda ocupa un numero entero de pixeles. El tablero cabe
+                // siempre completo y permanece centrado al redimensionar la ventana.
+                int celda = Math.max(1, Math.min(
+                        (getWidth() - 2 * MARGEN_TABLERO) / ANCHO,
+                        (getHeight() - 2 * MARGEN_TABLERO) / ALTO));
+                int anchoTablero = ANCHO * celda;
+                int altoTablero = ALTO * celda;
+                int origenX = (getWidth() - anchoTablero) / 2;
+                int origenY = (getHeight() - altoTablero) / 2;
+
+                g2.setColor(CUADRICULA);
+                for (int x = 1; x < ANCHO; x++) {
+                    int lineaX = origenX + x * celda;
+                    g2.drawLine(lineaX, origenY, lineaX, origenY + altoTablero);
                 }
-                Serpiente serpiente = logica.getSerpiente();
-                for (Punto p : serpiente) {
-                    g2.setColor(p.equals(serpiente.getCabeza()) ? CABEZA : CUERPO);
-                    g2.fillRoundRect(p.x() * CELDA + 1, p.y() * CELDA + 1, CELDA - 2, CELDA - 2, 6, 6);
+                for (int y = 1; y < ALTO; y++) {
+                    int lineaY = origenY + y * celda;
+                    g2.drawLine(origenX, lineaY, origenX + anchoTablero, lineaY);
                 }
-            }
-            if (mensaje != null) {
-                dibujarMensaje(g2, mensaje.split("\n"));
+
+                if (logica != null) {
+                    Punto comida = logica.getComida();
+                    int separacion = Math.max(1, celda / 10);
+                    if (comida != null) {
+                        g2.setColor(COMIDA);
+                        g2.fillOval(origenX + comida.x() * celda + separacion,
+                                origenY + comida.y() * celda + separacion,
+                                Math.max(1, celda - 2 * separacion),
+                                Math.max(1, celda - 2 * separacion));
+                    }
+                    Serpiente serpiente = logica.getSerpiente();
+                    for (Punto p : serpiente) {
+                        g2.setColor(p.equals(serpiente.getCabeza()) ? CABEZA : CUERPO);
+                        g2.fillRoundRect(origenX + p.x() * celda + 1,
+                                origenY + p.y() * celda + 1,
+                                Math.max(1, celda - 2), Math.max(1, celda - 2), 6, 6);
+                    }
+                }
+
+                // Limite real del mapa: cuatro lados visibles, incluso en los bordes.
+                g2.setColor(BORDE);
+                g2.setStroke(new java.awt.BasicStroke(3f));
+                g2.drawRect(origenX, origenY, anchoTablero, altoTablero);
+
+                if (mensaje != null) {
+                    dibujarMensaje(g2, mensaje.split("\n"));
+                }
+            } finally {
+                g2.dispose();
             }
         }
 

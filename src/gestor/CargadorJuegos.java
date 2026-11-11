@@ -1,7 +1,7 @@
 package gestor;
 
 import gestor.api.GameFunction;
-import juegos.demo.DemoGame;
+import juegos.Clicker.DemoGame;
 import juegos.memoria.MemoriaGame;
 import juegos.snake.SnakeGame;
 import juegos.tetris.TetrisGame;

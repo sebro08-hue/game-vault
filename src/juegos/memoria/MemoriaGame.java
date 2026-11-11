@@ -2,6 +2,9 @@ package juegos.memoria;
 
 import gestor.api.GameFunction;
 import gestor.api.Stat;
+import sonidos.Efectos;
+import sonidos.Efectos.Sonido;
+
 
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
@@ -130,6 +133,11 @@ public class MemoriaGame extends JInternalFrame implements GameFunction {
             lblEstado.setText(e.getMessage());
             return;
         }
+        if (resultado == Tablero.Resultado.ACIERTO) {
+            Efectos.reproducir(Sonido.PAREJA);
+        } else {
+            Efectos.reproducir(Sonido.CARTA);
+        }
         refrescar();
         actualizarEstado();
         if (resultado == Tablero.Resultado.FALLO) {
@@ -148,6 +156,7 @@ public class MemoriaGame extends JInternalFrame implements GameFunction {
 
     private void terminar() {
         reloj.stop();
+        Efectos.reproducir(Sonido.MEMORIA_GANAR);
         int puntaje = Math.max(0, 1000 - 25 * tablero.getIntentos() - 5 * segundos);
         // el nombre queda null: la plataforma pone el del jugador de la sesion
         ultimoResultado = new Stat("Puntaje", null, puntaje);

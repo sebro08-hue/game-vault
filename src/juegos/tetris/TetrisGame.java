@@ -2,6 +2,9 @@ package juegos.tetris;
 
 import gestor.api.GameFunction;
 import gestor.api.Stat;
+import sonidos.Efectos;
+import sonidos.Efectos.Sonido;
+
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -131,15 +134,15 @@ public final class TetrisGame extends JInternalFrame implements GameFunction {
     }
 
     private void configurarTeclas() {
-        vincular("LEFT", "izquierda", () -> ejecutar(() -> logica.mover(-1)));
+        vincular("LEFT", "izquierda", () -> ejecutar(() -> logica.mover(-1), false));
         vincular("A", "izquierda", null);
-        vincular("RIGHT", "derecha", () -> ejecutar(() -> logica.mover(1)));
+        vincular("RIGHT", "derecha", () -> ejecutar(() -> logica.mover(1), false));
         vincular("D", "derecha", null);
-        vincular("UP", "girar", () -> ejecutar(logica::girar));
+        vincular("UP", "girar", () -> ejecutar(logica::girar, false));
         vincular("W", "girar", null);
-        vincular("DOWN", "bajar", () -> ejecutar(logica::bajar));
+        vincular("DOWN", "bajar", () -> ejecutar(logica::bajar, true));
         vincular("S", "bajar", null);
-        vincular("SPACE", "caida", () -> ejecutar(logica::caidaRapida));
+        vincular("SPACE", "caida", () -> ejecutar(logica::caidaRapida, false));
         vincular("P", "pausar", this::pausar);
         panel.addMouseListener(new MouseAdapter() {
             @Override
@@ -161,7 +164,7 @@ public final class TetrisGame extends JInternalFrame implements GameFunction {
         }
     }
 
-    private void ejecutar(Runnable accion) {
+    private void ejecutar(Runnable accion, boolean esBajada) {
         if (logica == null || logica.isTerminado() || pausado) {
             return;
         }
@@ -169,7 +172,12 @@ public final class TetrisGame extends JInternalFrame implements GameFunction {
             iniciado = true;
             reloj.start();
         }
+        int puntosAntes = logica.getPuntos();
+        int lineasAntes = logica.getLineas();
+        Pieza piezaAntes = logica.getPiezaActual();
+        int filasAntes = contarBloquesFijos();
         accion.run();
+        reproducirCambios(puntosAntes, lineasAntes, piezaAntes, filasAntes, esBajada);
         comprobarFin();
         actualizarEstado();
         panel.repaint();
@@ -180,11 +188,49 @@ public final class TetrisGame extends JInternalFrame implements GameFunction {
             reloj.stop();
             return;
         }
+        int puntosAntes = logica.getPuntos();
+        int lineasAntes = logica.getLineas();
+        Pieza piezaAntes = logica.getPiezaActual();
+        int filasAntes = contarBloquesFijos();
         logica.bajar();
+        reproducirCambios(puntosAntes, lineasAntes, piezaAntes, filasAntes, false);
         comprobarFin();
         reloj.setDelay(Math.max(RETARDO_MINIMO, RETARDO_INICIAL - (logica.getLineas() / 5) * 65));
         actualizarEstado();
         panel.repaint();
+    }
+
+    /** Detecta los eventos despues de un movimiento, sin alterar las reglas del Tetris. */
+    private void reproducirCambios(int puntosAntes, int lineasAntes, Pieza piezaAntes, int bloquesAntes, boolean esBajada) {
+        int eliminadas = logica.getLineas() - lineasAntes;
+        boolean fijada = eliminadas > 0 || logica.getProximaPieza() != null
+                && (logica.getPiezaActual() != piezaAntes || contarBloquesFijos() != bloquesAntes);
+        // Dos piezas consecutivas pueden ser del mismo tipo; la cuenta de bloques
+        // permite detectar tambien ese caso cuando no se eliminan filas.
+        if (fijada) {
+            Efectos.reproducir(Sonido.TETRIS_FIJAR);
+        } else if (esBajada) {
+            Efectos.reproducir(Sonido.TETRIS_BAJAR);
+        }
+        if (eliminadas > 0) {
+            Efectos.reproducir(eliminadas >= 4
+                    ? Sonido.TETRIS_CUATRO_LINEAS : Sonido.TETRIS_LINEAS);
+        }
+        if (logica.getPuntos() / 100 > puntosAntes / 100) {
+            Efectos.reproducir(Sonido.TETRIS_CIEN);
+        }
+    }
+
+    private int contarBloquesFijos() {
+        int bloques = 0;
+        for (int y = 0; y < LogicaTetris.ALTO; y++) {
+            for (int x = 0; x < LogicaTetris.ANCHO; x++) {
+                if (logica.getCelda(x, y) != null) {
+                    bloques++;
+                }
+            }
+        }
+        return bloques;
     }
 
     private void pausar() {
@@ -204,6 +250,7 @@ public final class TetrisGame extends JInternalFrame implements GameFunction {
     private void comprobarFin() {
         if (logica.isTerminado()) {
             reloj.stop();
+            Efectos.reproducir(Sonido.TETRIS_PERDER);
             // El gestor completa el nombre al cerrar el Internal Frame.
             ultimoResultado = new Stat("Puntos", null, logica.getPuntos());
         }

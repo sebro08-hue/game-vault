@@ -1,6 +1,10 @@
 package gestor;
 
+import sonidos.MusicaAmbiente;
+
 import javax.swing.JOptionPane;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.SwingUtilities;
 import java.nio.file.Path;
 
@@ -31,6 +35,14 @@ public class Main {
             JOptionPane.showMessageDialog(null, e.getMessage() + "\nSe iniciara sin records previos.",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
-        new VentanaPrincipal(records, jugador.trim()).setVisible(true);
+        VentanaPrincipal ventana = new VentanaPrincipal(records, jugador.trim());
+        ventana.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent evento) {
+                MusicaAmbiente.detener();
+            }
+        });
+        ventana.setVisible(true);
+        MusicaAmbiente.iniciar();
     }
 }

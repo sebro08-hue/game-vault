@@ -1,7 +1,10 @@
-package juegos.demo;
+package juegos.Clicker;
 
 import gestor.api.GameFunction;
 import gestor.api.Stat;
+import sonidos.Efectos;
+import sonidos.Efectos.Sonido;
+
 
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
@@ -74,6 +77,9 @@ public class DemoGame extends JInternalFrame implements GameFunction {
             reloj.start();
         }
         clics++;
+        if (clics % 10 == 0) {
+            Efectos.reproducir(Sonido.CLICK_DIEZ);
+        }
         btnClick.setText("Clic! (" + clics + ")");
         actualizarInfo();
     }
@@ -83,6 +89,7 @@ public class DemoGame extends JInternalFrame implements GameFunction {
         actualizarInfo();
         if (restantes <= 0) {
             reloj.stop();
+            Efectos.reproducir(Sonido.CLICK_FIN);
             enCurso = false;
             btnClick.setEnabled(false);
             // el nombre queda null: la plataforma pone el del jugador de la sesion
