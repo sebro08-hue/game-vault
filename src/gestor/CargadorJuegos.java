@@ -4,6 +4,7 @@ import gestor.api.GameFunction;
 import juegos.demo.DemoGame;
 import juegos.memoria.MemoriaGame;
 import juegos.snake.SnakeGame;
+import juegos.tetris.TetrisGame;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -25,7 +26,8 @@ public final class CargadorJuegos {
     private static final List<JuegoInfo> JUEGOS = List.of(
             new JuegoInfo("Click Rapido", DemoGame::getInstance),
             new JuegoInfo("Memoria", MemoriaGame::getInstance),
-            new JuegoInfo("Snake", SnakeGame::getInstance)
+            new JuegoInfo("Snake", SnakeGame::getInstance),
+            new JuegoInfo("Tetris", TetrisGame::getInstance)
     );
 
     private CargadorJuegos() {
