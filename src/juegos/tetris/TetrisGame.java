@@ -120,6 +120,7 @@ public final class TetrisGame extends JInternalFrame implements GameFunction {
     @Override
     public void iniciar() {
         reloj.stop();
+        reloj.setDelay(RETARDO_INICIAL);
         logica = new LogicaTetris(new Random());
         ultimoResultado = null;
         iniciado = false;
@@ -193,7 +194,8 @@ public final class TetrisGame extends JInternalFrame implements GameFunction {
         Pieza piezaAntes = logica.getPiezaActual();
         int filasAntes = contarBloquesFijos();
         logica.bajar();
-        reproducirCambios(puntosAntes, lineasAntes, piezaAntes, filasAntes, true);
+        // caida automatica: sin sonido de 'bajar' (solo suena al fijar o al bajar con la tecla)
+        reproducirCambios(puntosAntes, lineasAntes, piezaAntes, filasAntes, false);
         comprobarFin();
         reloj.setDelay(Math.max(RETARDO_MINIMO, RETARDO_INICIAL - (logica.getLineas() / 5) * 65));
         actualizarEstado();

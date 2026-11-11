@@ -32,7 +32,7 @@ public final class Efectos {
 
     /** No lanza errores si el equipo no dispone de un dispositivo de audio. */
     public static void reproducir(Sonido sonido) {
-        if (sonido == null) {
+        if (sonido == null || ControlAudio.isSilenciado()) {
             return;
         }
         REPRODUCTOR.execute(() -> {

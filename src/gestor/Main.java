@@ -38,7 +38,7 @@ public class Main {
         VentanaPrincipal ventana = new VentanaPrincipal(records, jugador.trim());
         ventana.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent evento) {
+            public void windowClosing(WindowEvent evento) {
                 MusicaAmbiente.detener();
             }
         });

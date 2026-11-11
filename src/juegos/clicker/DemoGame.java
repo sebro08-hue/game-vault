@@ -1,4 +1,4 @@
-package juegos.Clicker;
+package juegos.clicker;
 
 import gestor.api.GameFunction;
 import gestor.api.Stat;
