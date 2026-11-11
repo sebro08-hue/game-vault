@@ -193,7 +193,7 @@ public final class TetrisGame extends JInternalFrame implements GameFunction {
         Pieza piezaAntes = logica.getPiezaActual();
         int filasAntes = contarBloquesFijos();
         logica.bajar();
-        reproducirCambios(puntosAntes, lineasAntes, piezaAntes, filasAntes, false);
+        reproducirCambios(puntosAntes, lineasAntes, piezaAntes, filasAntes, true);
         comprobarFin();
         reloj.setDelay(Math.max(RETARDO_MINIMO, RETARDO_INICIAL - (logica.getLineas() / 5) * 65));
         actualizarEstado();

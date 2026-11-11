@@ -63,7 +63,7 @@ public final class Efectos {
             case MANZANA -> secuencia(new int[]{740, 990}, new int[]{55, 90}, 0.23, false);
             case SNAKE_PERDER -> secuencia(new int[]{390, 310, 220}, new int[]{110, 120, 240}, 0.28, false);
             case SNAKE_GANAR -> secuencia(new int[]{523, 659, 784, 1047, 1319}, new int[]{90, 90, 90, 130, 270}, 0.29, false);
-            case TETRIS_BAJAR -> secuencia(new int[]{230}, new int[]{38}, 0.075, false);
+            case TETRIS_BAJAR -> secuencia(new int[]{230}, new int[]{38}, 0.45, false);
             case TETRIS_FIJAR -> secuencia(new int[]{185, 145}, new int[]{65, 95}, 0.18, false);
             case TETRIS_LINEAS -> secuencia(new int[]{523, 784, 1047}, new int[]{70, 75, 125}, 0.25, false);
             case TETRIS_CUATRO_LINEAS -> secuencia(new int[]{523, 659, 784, 1047, 1319}, new int[]{70, 70, 70, 100, 260}, 0.34, false);
