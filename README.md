@@ -20,6 +20,9 @@ Proyecto del curso Programación Orientada a Objetos – TEC, Sede San Carlos.
 | Memoria | Puntaje: `1000 − 25·intentos − 5·segundos` | Clic en las cartas |
 | Snake | Manzanas comidas | Flechas o WASD · P/Espacio: pausa |
 | Tetris | Puntos (líneas + caída rápida) | ←/→ o A/D · ↑/W: girar · ↓/S: bajar · Espacio: caída · P: pausa |
+| Ahorcado (*) | Puntos (10 por letra + 5 por vida sobrante, palabra tras palabra hasta 6 errores) | Teclado del computador o clic en las letras |
+
+(*) Juego creado por otro grupo e integrado a la plataforma; vive en su propio paquete `juegos.ahorcado`, sin modificaciones salvo su registro en `CargadorJuegos`.
 
 El sonido se apaga o enciende desde **Archivo → Silenciar sonido**.
 
