@@ -1,6 +1,7 @@
 package gestor;
 
 import gestor.api.GameFunction;
+import juegos.ahorcado.AhorcadoGame;
 import juegos.clicker.DemoGame;
 import juegos.memoria.MemoriaGame;
 import juegos.snake.SnakeGame;
@@ -27,7 +28,8 @@ public final class CargadorJuegos {
             new JuegoInfo("Click Rapido", DemoGame::getInstance),
             new JuegoInfo("Memoria", MemoriaGame::getInstance),
             new JuegoInfo("Snake", SnakeGame::getInstance),
-            new JuegoInfo("Tetris", TetrisGame::getInstance)
+            new JuegoInfo("Tetris", TetrisGame::getInstance),
+            new JuegoInfo("Ahorcado", AhorcadoGame::getInstance)
     );
 
     private CargadorJuegos() {
